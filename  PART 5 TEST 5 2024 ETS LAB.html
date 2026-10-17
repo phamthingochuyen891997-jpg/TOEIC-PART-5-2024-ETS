@@ -1,0 +1,1530 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Test 5 Part 5 Lab (ETS 2024)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@500&display=swap">
+
+  <style>
+    /* ---------- Reset & base ---------- */
+    :root{
+      color-scheme: light;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+
+      --bg:#fff7fa;
+      --surface:#ffffff;
+      --surface-2:#fff0f5;
+      --line:#f2cfdc;
+      --fg:#2b1a22;
+      --muted:#7a5a68;
+      --accent:#c41f63;
+      --accent-2:#e75b92;
+      --accent-soft:#ffd6e7;
+      --on-accent:#ffffff;
+      --good:#1f8a5b;
+      --good-soft:#dff3ea;
+      --bad:#c2410c;
+      --bad-soft:#fde7dc;
+      --info:#2a6f97;
+      --info-soft:#e3f0f7;
+      --star:#d99a00;
+
+      --f-display:"Playfair Display", Georgia, "Times New Roman", serif;
+      --f-body:"DM Sans", "Segoe UI", system-ui, sans-serif;
+      --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+      --qsize:1.06rem;
+    }
+
+    html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+    body{
+      margin:0; padding:0;
+      font:14px/1.55 var(--f-body);
+      background:var(--bg);
+      color:var(--fg);
+      font-size:15px;
+    }
+    img{ max-width:100%; }
+    *{ box-sizing:border-box; }
+    [hidden]{ display:none !important; }
+    :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+    button, input, textarea, select{ font:inherit; color:inherit; }
+    button{ cursor:pointer; }
+
+    /* ---------- Dark theme ---------- */
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]){
+        --bg:#1a1015; --surface:#24161d; --surface-2:#2e1c25; --line:#4a2c3a;
+        --fg:#f7e9ef; --muted:#c3a3b1; --accent:#ff6fa3; --accent-2:#ff8fb8;
+        --accent-soft:#4a1f31; --on-accent:#1a1015; --good:#5cd39b; --good-soft:#163527;
+        --bad:#ff9a6b; --bad-soft:#3b2116; --info:#7cc0e6; --info-soft:#15303f;
+        --star:#ffc93c;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"]{
+      --bg:#1a1015; --surface:#24161d; --surface-2:#2e1c25; --line:#4a2c3a;
+      --fg:#f7e9ef; --muted:#c3a3b1; --accent:#ff6fa3; --accent-2:#ff8fb8;
+      --accent-soft:#4a1f31; --on-accent:#1a1015; --good:#5cd39b; --good-soft:#163527;
+      --bad:#ff9a6b; --bad-soft:#3b2116; --info:#7cc0e6; --info-soft:#15303f;
+      --star:#ffc93c;
+      color-scheme: dark;
+    }
+
+    /* ---------- Layout ---------- */
+    .wrap{ max-width:900px; margin:0 auto; padding-inline:16px; }
+
+    /* ---------- Top bar ---------- */
+    .top{
+      position:sticky; top:env(safe-area-inset-top, 0px); z-index:20;
+      background:color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter:blur(8px);
+      border-bottom:1px solid var(--line);
+    }
+    .top .wrap{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding-block:10px; }
+    .brand{ display:flex; flex-direction:column; line-height:1.15; margin-right:auto; }
+    .brand b{ font-family:var(--f-display); font-size:1.25rem; color:var(--accent); }
+    .brand small{ color:var(--muted); font-size:.78rem; letter-spacing:.04em; }
+
+    .tabs{ display:flex; gap:4px; background:var(--surface-2); padding:3px; border-radius:999px; border:1px solid var(--line); }
+    .tabs button{ border:0; background:transparent; padding:6px 12px; border-radius:999px; font-size:.88rem; font-weight:500; color:var(--muted); }
+    .tabs button[aria-selected="true"]{ background:var(--accent); color:var(--on-accent); }
+
+    .score{
+      font-family:var(--f-mono); font-size:.85rem; padding:5px 10px; border-radius:999px;
+      background:var(--surface); border:1px solid var(--line); font-variant-numeric:tabular-nums;
+    }
+    .switch{ display:flex; align-items:center; gap:8px; font-size:.85rem; font-weight:500; }
+    .switch input{ appearance:none; width:38px; height:22px; border-radius:999px; background:var(--line); position:relative; cursor:pointer; transition:background .2s; }
+    .switch input::after{ content:""; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:var(--surface); transition:transform .2s; }
+    .switch input:checked{ background:var(--accent); }
+    .switch input:checked::after{ transform:translateX(16px); }
+
+    /* ---------- Teacher toolbar ---------- */
+    .tbar{ background:var(--accent-soft); border-bottom:1px solid var(--line); }
+    .tbar .wrap{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding-block:8px; }
+    .tbar .lbl{ font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-right:4px; }
+
+    .btn{
+      border:1px solid var(--line); background:var(--surface); padding:6px 11px; border-radius:8px;
+      font-size:.85rem; font-weight:500; display:inline-flex; align-items:center; gap:6px;
+    }
+    .btn:hover{ border-color:var(--accent); }
+    .btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+    select.btn{ padding-right:6px; }
+
+    .timer{ font-family:var(--f-mono); font-variant-numeric:tabular-nums; min-width:4.2ch; text-align:center; font-weight:500; }
+    .timer.low{ color:var(--bad); }
+
+    /* ---------- Main ---------- */
+    main{ padding-block:20px 60px; }
+    .intro{ display:grid; gap:6px; margin-bottom:16px; }
+    .intro h1{ font-family:var(--f-display); font-size:clamp(1.6rem, 4vw, 2.3rem); margin:0; text-wrap:balance; line-height:1.15; }
+    .intro p{ margin:0; color:var(--muted); max-width:65ch; }
+
+    .filters{ display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 18px; }
+    .chip{
+      border:1px solid var(--line); background:var(--surface); border-radius:999px;
+      padding:4px 12px; font-size:.84rem;
+    }
+    .chip[aria-pressed="true"]{ background:var(--fg); color:var(--bg); border-color:var(--fg); }
+    .chip .c{ font-family:var(--f-mono); font-size:.75rem; opacity:.7; margin-left:4px; }
+
+    /* ---------- Question card ---------- */
+    .q{
+      background:var(--surface); border:1px solid var(--line); border-radius:14px;
+      padding:16px 18px; margin-bottom:14px; scroll-margin-top:130px;
+    }
+    .q.picked{ box-shadow:0 0 0 3px var(--accent-2); }
+    .qhead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+    .qnum{ font-family:var(--f-display); font-weight:800; font-size:1.35rem; color:var(--accent); }
+    .tag{
+      font-size:.72rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+      padding:2px 8px; border-radius:6px; background:var(--surface-2); color:var(--muted); border:1px solid var(--line);
+    }
+    .tag.t-tl{ color:var(--info); background:var(--info-soft); border-color:transparent; }
+    .tag.t-np{ color:var(--good); background:var(--good-soft); border-color:transparent; }
+    .tag.t-tv{ color:var(--accent); background:var(--accent-soft); border-color:transparent; }
+
+    .star{ margin-left:auto; border:0; background:transparent; font-size:1.25rem; color:var(--line); line-height:1; padding:2px 4px; }
+    .star[aria-pressed="true"]{ color:var(--star); }
+
+    .stem{ font-size:var(--qsize); margin:0 0 12px; max-width:68ch; }
+    .blank{ display:inline-block; min-width:5.5em; border-bottom:2px solid var(--accent); text-align:center; color:var(--accent); font-weight:700; padding:0 4px; }
+
+    .opts{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    @media (max-width:560px){ .opts{ grid-template-columns:1fr; } }
+
+    .opt{
+      display:flex; gap:10px; align-items:center; text-align:left;
+      border:1px solid var(--line); background:var(--surface); border-radius:10px;
+      padding:9px 12px; font-size:var(--qsize);
+    }
+    .opt b{
+      font-family:var(--f-mono); font-size:.82rem; width:1.8em; height:1.8em;
+      display:grid; place-items:center; border-radius:50%; background:var(--surface-2); flex:none;
+    }
+    .opt:hover:not(:disabled){ border-color:var(--accent); }
+    .opt:disabled{ cursor:default; }
+    .opt.right{ background:var(--good-soft); border-color:var(--good); }
+    .opt.right b{ background:var(--good); color:var(--surface); }
+    .opt.wrong{ background:var(--bad-soft); border-color:var(--bad); }
+    .opt.wrong b{ background:var(--bad); color:var(--surface); }
+    .opt.key{ outline:2px dashed var(--good); outline-offset:1px; }
+
+    .feedback{ margin-top:10px; font-weight:600; font-size:.9rem; }
+    .feedback.ok{ color:var(--good); }
+    .feedback.no{ color:var(--bad); }
+
+    .actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .link{ border:0; background:transparent; color:var(--accent); font-weight:600; font-size:.86rem; padding:4px 0; }
+
+    .exp{ margin-top:12px; border-top:1px dashed var(--line); padding-top:12px; display:grid; gap:10px; }
+    .row{ display:grid; grid-template-columns:150px minmax(0, 1fr); gap:10px; }
+    @media (max-width:560px){ .row{ grid-template-columns:1fr; gap:2px; } }
+    .row h4{ margin:0; font-size:.74rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding-top:2px; }
+    .row.r0 h4{ color:var(--accent); }
+    .row.r1 h4{ color:var(--fg); }
+    .row.r2 h4{ color:var(--info); }
+    .row.r3 h4{ color:var(--good); }
+    .row.r4 h4{ color:var(--muted); }
+    .row p{ margin:0; }
+    .row ul{ margin:0; padding-left:18px; }
+    .tr{ font-style:italic; }
+
+    ul.om{ list-style:none; padding:0; margin:0; display:grid; gap:4px; }
+    ul.om li{ display:flex; gap:8px; align-items:baseline; padding:4px 8px; border-radius:8px; }
+    ul.om li b{ font-family:var(--f-mono); font-size:.8rem; color:var(--muted); flex:none; }
+    ul.om li em{ font-style:normal; font-weight:700; margin-right:4px; }
+    ul.om li i{ margin-left:auto; font-style:normal; font-size:.75rem; font-weight:700; color:var(--good); white-space:nowrap; flex:none; }
+    ul.om li.ok{ background:var(--good-soft); }
+    ul.om li.ok b{ color:var(--good); }
+
+    .syns{ display:flex; flex-wrap:wrap; gap:6px; }
+    .syn{ background:var(--good-soft); border-radius:8px; padding:3px 9px; font-size:.88rem; }
+    .syn strong{ color:var(--good); }
+
+    .note{ margin-top:12px; }
+    .note label{ font-size:.74rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:4px; }
+    .note textarea{
+      width:100%; min-height:62px; resize:vertical; border:1px solid var(--line); border-radius:10px;
+      padding:8px 10px; background:var(--surface-2); font-size:.92rem;
+    }
+    .saved{ font-size:.75rem; color:var(--muted); margin-left:6px; }
+
+    /* ---------- Vocab tab ---------- */
+    .search{
+      width:100%; max-width:420px; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; background:var(--surface); margin:6px 0 14px;
+    }
+    .tblwrap{ overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+    table{ border-collapse:collapse; width:100%; min-width:640px; font-size:.9rem; }
+    th, td{ text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th{ background:var(--accent); color:var(--on-accent); font-size:.76rem; letter-spacing:.06em; text-transform:uppercase; position:sticky; top:0; }
+    td:first-child{ font-family:var(--f-display); font-weight:700; color:var(--accent); white-space:nowrap; }
+    tr:nth-child(even) td{ background:var(--surface-2); }
+    mark{ background:var(--accent-soft); color:inherit; border-radius:3px; }
+
+    /* ---------- Notes tab ---------- */
+    .notes-grid{ display:grid; gap:14px; }
+    .panel{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; }
+    .panel h2{ font-family:var(--f-display); margin:0 0 8px; font-size:1.25rem; }
+    .panel textarea{ width:100%; min-height:160px; border:1px solid var(--line); border-radius:10px; padding:10px; background:var(--surface-2); }
+    .nlist{ display:grid; gap:8px; }
+    .nitem{ display:grid; grid-template-columns:56px minmax(0, 1fr); gap:8px; border-bottom:1px dashed var(--line); padding-bottom:8px; }
+    .nitem b{ font-family:var(--f-display); color:var(--accent); }
+    .empty{ color:var(--muted); font-style:italic; }
+
+    /* ---------- Spotlight ---------- */
+    .spot{
+      position:fixed; inset:0; z-index:50; background:var(--bg);
+      display:flex; flex-direction:column;
+      padding:calc(env(safe-area-inset-top, 0px) + 14px) 16px calc(env(safe-area-inset-bottom, 0px) + 14px);
+    }
+    .spot-top{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; max-width:1100px; width:100%; margin:0 auto; }
+    .spot-top .count{ font-family:var(--f-mono); color:var(--muted); }
+    .spot-top .timer{ font-size:1.6rem; margin-left:auto; }
+    .spot-body{ flex:1; overflow:auto; max-width:1100px; width:100%; margin:12px auto 0; display:flex; flex-direction:column; justify-content:center; }
+    .spot .stem{ font-size:clamp(1.3rem, 3vw, 2.1rem); line-height:1.4; max-width:none; }
+    .spot .opt{ font-size:clamp(1.05rem, 2.2vw, 1.55rem); padding:14px 18px; }
+    .spot .exp{ font-size:1.1rem; }
+    .spot .qnum{ font-size:2.2rem; }
+
+    .toast{
+      position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 18px);
+      transform:translateX(-50%); background:var(--fg); color:var(--bg);
+      padding:8px 14px; border-radius:10px; font-size:.88rem; z-index:60;
+    }
+
+    /* ---------- Teacher notes ---------- */
+    .tnote{
+      margin-top:12px; border:1.5px dashed var(--info); background:var(--info-soft);
+      border-radius:12px; padding:10px 12px; display:none;
+    }
+    body.teacher .tnote{ display:block; }
+    .tnote label{
+      font-size:.74rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+      color:var(--info); display:flex; align-items:center; gap:6px; margin-bottom:6px;
+    }
+    .tnote textarea{
+      width:100%; min-height:70px; resize:vertical; border:1px solid var(--line);
+      border-radius:10px; padding:8px 10px; background:var(--surface); font-size:.95rem;
+    }
+    .tnote .hint{ font-weight:500; letter-spacing:0; text-transform:none; color:var(--muted); }
+
+    .tshow{
+      margin-top:12px; border-left:4px solid var(--info); background:var(--info-soft);
+      border-radius:10px; padding:10px 14px; white-space:pre-wrap;
+    }
+    .tshow h4{ margin:0 0 4px; font-size:.74rem; letter-spacing:.08em; text-transform:uppercase; color:var(--info); }
+
+    .tpanel{ display:none; }
+    body.teacher .tpanel{ display:block; }
+
+    footer{ color:var(--muted); font-size:.8rem; text-align:center; padding-block:10px 30px; }
+
+    @media (prefers-reduced-motion:reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+
+    /* ---------- Highlighter ---------- */
+    :root{
+      --hl-y:#fff176; --hl-p:#ffb3d1; --hl-g:#b9f0c8; --hl-b:#b8dcff; --hl-fg:#2b1a22;
+    }
+    @media (prefers-color-scheme: dark){
+      :root:not([data-theme="light"]){ --hl-y:#8a7a12; --hl-p:#8a2f57; --hl-g:#256b40; --hl-b:#28557f; --hl-fg:#fff; }
+    }
+    :root[data-theme="dark"]{ --hl-y:#8a7a12; --hl-p:#8a2f57; --hl-g:#256b40; --hl-b:#28557f; --hl-fg:#fff; }
+
+    mark.hl{ color:var(--hl-fg); border-radius:3px; padding:0 1px; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+    mark.hl-y{ background:var(--hl-y); }
+    mark.hl-p{ background:var(--hl-p); }
+    mark.hl-g{ background:var(--hl-g); }
+    mark.hl-b{ background:var(--hl-b); }
+
+    body.hl-on [data-hlkey]{ cursor:text; outline:1px dashed color-mix(in srgb, var(--accent) 45%, transparent); outline-offset:3px; }
+    body.hl-erase mark.hl{ cursor:pointer; outline:1px dashed var(--bad); }
+
+    .hlbox{
+      position:fixed; left:16px; bottom:calc(env(safe-area-inset-bottom, 0px) + 16px);
+      z-index:70; display:flex; flex-direction:column-reverse; align-items:flex-start; gap:8px;
+    }
+    #hlToggle{
+      border:1px solid var(--line); background:var(--surface); border-radius:999px;
+      padding:9px 14px; font-weight:700; font-size:.88rem;
+      box-shadow:0 4px 14px rgba(0, 0, 0, .12); color:var(--fg);
+    }
+    #hlToggle.on{ background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+
+    .hlpanel{
+      background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:10px;
+      box-shadow:0 6px 20px rgba(0, 0, 0, .15); display:grid; gap:8px; max-width:calc(100vw - 32px);
+    }
+    .hlpanel .pens{ display:flex; flex-wrap:wrap; gap:6px; }
+    .pen{
+      width:34px; height:34px; border-radius:50%; border:2px solid var(--line);
+      display:grid; place-items:center; font-size:.8rem; font-weight:700; color:var(--hl-fg);
+    }
+    .pen[data-pen="y"]{ background:var(--hl-y); }
+    .pen[data-pen="p"]{ background:var(--hl-p); }
+    .pen[data-pen="g"]{ background:var(--hl-g); }
+    .pen[data-pen="b"]{ background:var(--hl-b); }
+    .pen[data-pen="erase"]{ background:var(--surface-2); color:var(--fg); width:auto; border-radius:999px; padding:0 10px; }
+    .pen[aria-pressed="true"]{ border-color:var(--fg); box-shadow:0 0 0 2px var(--accent); }
+
+    .hlpanel small{ color:var(--muted); font-size:.76rem; max-width:230px; }
+    .hlpanel .row2{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <b>Part 5 · Test 5</b>
+        <small>TOEIC Reading · ETS 2024 · Ms. Ngọc Huyền</small>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="practice" id="tab-practice">Luyện tập</button>
+        <button role="tab" aria-selected="false" data-tab="vocab" id="tab-vocab">Từ vựng &amp; Cấu trúc</button>
+        <button role="tab" aria-selected="false" data-tab="notes" id="tab-notes">Ghi chú</button>
+      </div>
+
+      <span class="score" id="score">0/30 · 0 đúng</span>
+
+      <label class="switch">
+        <input type="checkbox" id="teacherMode">
+        Giáo viên
+      </label>
+    </div>
+
+    <div class="tbar" id="tbar" hidden>
+      <div class="wrap">
+        <span class="lbl">Công cụ GV</span>
+        <button class="btn primary" id="btnSpot">▶ Trình chiếu</button>
+        <button class="btn" id="btnKeys">Hiện đáp án</button>
+        <button class="btn" id="btnExpAll">Mở tất cả giải thích</button>
+        <button class="btn" id="btnRandom">🎲 Gọi câu ngẫu nhiên</button>
+
+        <select class="btn" id="timerSel" aria-label="Thời gian">
+          <option value="20">20 giây</option>
+          <option value="30" selected>30 giây</option>
+          <option value="45">45 giây</option>
+          <option value="60">60 giây</option>
+          <option value="900">15 phút (cả Part)</option>
+        </select>
+
+        <button class="btn" id="btnTimer">⏱ Bắt đầu</button>
+        <span class="timer" id="timer">0:30</span>
+
+        <button class="btn" id="fontDown" aria-label="Giảm cỡ chữ">A−</button>
+        <button class="btn" id="fontUp" aria-label="Tăng cỡ chữ">A+</button>
+        <button class="btn" id="btnReset">↺ Làm lại</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Practice -->
+    <section id="view-practice">
+      <div class="intro">
+        <h1>Part 5 · Incomplete Sentences</h1>
+        <p>30 câu (101–130) trích từ ETS 2024 Test 5. Chọn đáp án để xem ngay đúng/sai, giải thích chi tiết, cấu trúc cần nhớ và từ đồng nghĩa. Mỗi câu có ô ghi chú riêng; ghi chú được lưu trên trình duyệt của bạn.</p>
+      </div>
+
+      <div class="filters" id="filters"></div>
+      <div id="list"></div>
+
+      <div id="confirmReset" class="panel" hidden style="margin-top:10px">
+        <p style="margin:0 0 10px">Xoá toàn bộ câu trả lời và đánh dấu? (Ghi chú vẫn được giữ.)</p>
+        <div class="actions">
+          <button class="btn primary" id="resetYes">Xoá câu trả lời</button>
+          <button class="btn" id="resetNo">Huỷ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vocab -->
+    <section id="view-vocab" hidden>
+      <div class="intro">
+        <h1>Từ vựng &amp; Cấu trúc</h1>
+        <p>Tổng hợp cấu trúc ngữ pháp, collocation và từ đồng nghĩa của 30 câu Part 5. Gõ để tìm nhanh.</p>
+      </div>
+
+      <input class="search" id="search" type="search" placeholder="Tìm từ, cấu trúc… (vd: eligible, despite)">
+
+      <div class="tblwrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Câu</th>
+              <th>Dạng</th>
+              <th>Đáp án</th>
+              <th>Cấu trúc &amp; từ vựng</th>
+              <th>Đồng nghĩa</th>
+            </tr>
+          </thead>
+          <tbody id="vbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Notes -->
+    <section id="view-notes" hidden>
+      <div class="notes-grid">
+        <div class="panel">
+          <h2>Ghi chú chung</h2>
+          <textarea id="generalNote" placeholder="Ghi chú cho cả bài: lỗi hay gặp, từ cần ôn, dặn dò lớp…"></textarea>
+          <div class="actions">
+            <button class="btn" id="copyNotes">Sao chép tất cả ghi chú</button>
+            <span class="saved" id="gSaved"></span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Ghi chú theo câu</h2>
+          <div class="nlist" id="nlist"></div>
+        </div>
+
+        <div class="panel tpanel">
+          <h2>🎓 Ghi chú giáo viên</h2>
+          <textarea id="tGeneral" placeholder="Kế hoạch dạy bài này: trọng tâm, thứ tự chữa câu, bài tập bổ sung…"></textarea>
+          <div class="nlist" id="tlist" style="margin-top:12px"></div>
+          <div class="actions">
+            <button class="btn" id="copyT">Sao chép ghi chú giáo viên</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© Ms. Ngọc Huyền · TOEIC Reading Test 5 (ETS 2024) · Đáp án do giáo viên biên soạn</footer>
+
+  <!-- Spotlight -->
+  <div class="spot" id="spot" hidden>
+    <div class="spot-top">
+      <button class="btn" id="spotClose">✕ Thoát</button>
+      <button class="btn" id="spotPrev">◀ Trước</button>
+      <button class="btn" id="spotNext">Tiếp ▶</button>
+      <span class="count" id="spotCount"></span>
+      <button class="btn" id="spotReveal">Hiện đáp án</button>
+      <button class="btn" id="spotExp">Giải thích</button>
+      <button class="btn" id="spotNote">🎓 Ghi chú GV</button>
+      <button class="btn" id="spotTimer">⏱</button>
+      <span class="timer" id="spotTime"></span>
+    </div>
+    <div class="spot-body" id="spotBody"></div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- Highlighter -->
+  <div class="hlbox">
+    <button id="hlToggle" aria-label="Công cụ highlight">🖍 Highlight</button>
+
+    <div class="hlpanel" id="hlPanel" hidden>
+      <div class="pens">
+        <button class="pen" data-pen="y" aria-pressed="false" aria-label="Bút vàng">Y</button>
+        <button class="pen" data-pen="p" aria-pressed="false" aria-label="Bút hồng">P</button>
+        <button class="pen" data-pen="g" aria-pressed="false" aria-label="Bút xanh lá">G</button>
+        <button class="pen" data-pen="b" aria-pressed="false" aria-label="Bút xanh dương">B</button>
+        <button class="pen" data-pen="erase" aria-pressed="false">Tẩy</button>
+      </div>
+
+      <small>Bôi đen chữ để tô màu · Tẩy: bấm vào chỗ đã tô</small>
+
+      <div class="row2">
+        <button class="btn" id="hlClear">Xoá tất cả highlight</button>
+      </div>
+
+      <div class="row2" id="hlConfirm" hidden>
+        <span style="font-size:.85rem">Xoá hết?</span>
+        <button class="btn primary" id="hlYes">Xoá</button>
+        <button class="btn" id="hlNo">Huỷ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========== DATA (ETS 2024 Test 5) ========== */
+    const Q = [
+      {
+        n: 101, stem: "After upgrading to Pro Data Whiz, our clients began ------- problems with spreadsheets.", opts: ["has", "had", "have", "having"], ans: "D", type: "Từ loại",
+        ex: "Cấu trúc 'begin + V-ing' (bắt đầu làm gì). Sau 'began' cần dạng V-ing → 'having'.",
+        st: "begin + V-ing/to V: bắt đầu làm gì; upgrade to: nâng cấp lên", syn: "having = experiencing, encountering; problem = issue, difficulty",
+        tr: "Sau khi nâng cấp lên Pro Data Whiz, khách hàng của chúng tôi bắt đầu gặp vấn đề với bảng tính.", om: ["(v – số ít) có", "(quá khứ) đã có", "(V nguyên mẫu) có", "(V-ing) có/đang gặp"]
+      },
+      {
+        n: 102, stem: "Requests for additional days off are ------- by Ms. Chung in Human Resources.", opts: ["approved", "dropped", "reached", "reminded"], ans: "A", type: "Từ vựng",
+        ex: "Đơn xin nghỉ thêm ĐƯỢC PHÊ DUYỆT (approved) bởi cô Chung. Câu bị động 'are approved by'.",
+        st: "be approved by: được phê duyệt bởi; days off: ngày nghỉ", syn: "approved = authorized, sanctioned; request = application, petition",
+        tr: "Các yêu cầu xin thêm ngày nghỉ được cô Chung ở phòng Nhân sự phê duyệt.", om: ["(V3) được phê duyệt", "(V3) bị bỏ", "(V3) được tiếp cận", "(V3) được nhắc nhở"]
+      },
+      {
+        n: 103, stem: "The programmers have a list of changes ------- the next software update.", opts: ["between", "of", "for", "above"], ans: "C", type: "Giới từ",
+        ex: "Cụm 'changes for + mục đích/sự kiện' (những thay đổi cho bản cập nhật tiếp theo).",
+        st: "a list of changes for: danh sách thay đổi cho; software update: bản cập nhật phần mềm", syn: "changes = modifications, adjustments; update = upgrade, revision",
+        tr: "Các lập trình viên có một danh sách các thay đổi cho bản cập nhật phần mềm tiếp theo.", om: ["(giới từ) giữa", "(giới từ) của", "(giới từ) cho", "(giới từ) phía trên"]
+      },
+      {
+        n: 104, stem: "Let Farida Banquet Service ------- professional catering for your important corporate events.", opts: ["providing", "provide", "provides", "to provide"], ans: "B", type: "Ngữ pháp",
+        ex: "Cấu trúc 'Let + O + V (nguyên mẫu)' → 'Let Farida Banquet Service provide…' (Hãy để… cung cấp).",
+        st: "let sb do sth: để ai làm gì; catering: dịch vụ ăn uống", syn: "provide = supply, offer; corporate events = company functions",
+        tr: "Hãy để Dịch vụ Tiệc Farida cung cấp dịch vụ ăn uống chuyên nghiệp cho các sự kiện doanh nghiệp quan trọng của bạn.", om: ["(V-ing) đang cung cấp", "(V nguyên mẫu) cung cấp", "(v – số ít) cung cấp", "(to V) để cung cấp"]
+      },
+      {
+        n: 105, stem: "Using various innovative techniques, Boyd Industries has improved the ------- of its tiles.", opts: ["closure", "product", "quality", "method"], ans: "C", type: "Từ vựng",
+        ex: "Cụm 'improve the quality of' (cải thiện chất lượng của) là collocation phổ biến.",
+        st: "improve the quality: cải thiện chất lượng; innovative techniques: kỹ thuật đổi mới", syn: "quality = standard, grade; improve = enhance, upgrade",
+        tr: "Sử dụng nhiều kỹ thuật đổi mới khác nhau, Boyd Industries đã cải thiện chất lượng gạch của mình.", om: ["(n) sự đóng cửa", "(n) sản phẩm", "(n) chất lượng", "(n) phương pháp"]
+      },
+      {
+        n: 106, stem: "------- of all cosmetics are final, and refunds will not be given under any circumstances.", opts: ["Sale", "Sales", "Sells", "Selling"], ans: "B", type: "Từ loại",
+        ex: "Cụm 'All sales are final' (Mọi giao dịch bán hàng là chung thủy/cuối cùng, không đổi trả). Cần danh từ số nhiều 'Sales'.",
+        st: "all sales are final: mọi giao dịch mua bán là cuối cùng (không hoàn trả); refund: tiền hoàn lại", syn: "sales = transactions, purchases; final = absolute, non-refundable",
+        tr: "Tất cả các giao dịch mua bán mỹ phẩm là chung thủy, và sẽ không được hoàn tiền trong bất kỳ trường hợp nào.", om: ["(n) sự bán", "(n) doanh số, sự bán hàng", "(v) bán", "(V-ing) việc bán"]
+      },
+      {
+        n: 107, stem: "If you have already submitted your response, no ------- action is required.", opts: ["bright", "further", "previous", "average"], ans: "B", type: "Từ vựng",
+        ex: "Cụm 'no further action is required' (không cần thêm hành động nào nữa) là cụm cố định.",
+        st: "no further action: không có thêm hành động nào; submit a response: nộp câu trả lời", syn: "further = additional, more; submit = send in, hand in",
+        tr: "Nếu bạn đã gửi câu trả lời của mình, không cần phải thực hiện thêm hành động nào nữa.", om: ["(adj) sáng sủa", "(adj) thêm, xa hơn", "(adj) trước đó", "(adj) trung bình"]
+      },
+      {
+        n: 108, stem: "Ms. Sieglak stated that the app design was based on ------- own research.", opts: ["she", "hers", "her", "herself"], ans: "C", type: "Từ loại",
+        ex: "Cần tính từ sở hữu trước danh từ 'own research' → 'her' (của cô ấy).",
+        st: "be based on: dựa trên; her own research: nghiên cứu của chính cô ấy", syn: "research = study, investigation; stated = said, mentioned",
+        tr: "Cô Sieglak tuyên bố rằng thiết kế ứng dụng dựa trên nghiên cứu của chính cô ấy.", om: ["(đại từ chủ ngữ) cô ấy", "(đại từ sở hữu) cái của cô ấy", "(tính từ sở hữu) của cô ấy", "(đại từ phản thân) chính cô ấy"]
+      },
+      {
+        n: 109, stem: "------- the organization has doubled its outreach efforts, it has yet to see an increase in new clients.", opts: ["Until", "Because", "Although", "Therefore"], ans: "C", type: "Ngữ pháp",
+        ex: "Hai mệnh đề mang nghĩa tương phản: tăng gấp đôi nỗ lực NHƯNG vẫn chưa thấy khách hàng mới tăng → 'Although' (Mặc dù).",
+        st: "Although + clause: mặc dù; double efforts: tăng gấp đôi nỗ lực", syn: "although = even though, though; outreach = engagement, communication",
+        tr: "Mặc dù tổ chức đã tăng gấp đôi nỗ lực tiếp cận, họ vẫn chưa thấy sự gia tăng số lượng khách hàng mới.", om: ["(liên từ) cho đến khi", "(liên từ) bởi vì", "(liên từ) mặc dù", "(trạng từ) do đó"]
+      },
+      {
+        n: 110, stem: "Starting on October 8, ------- board of education meetings will be streamed live on the school district's Web site.", opts: ["all", "so", "that", "to"], ans: "A", type: "Từ vựng",
+        ex: "Cần từ hạn định 'all' bổ nghĩa cho cụm danh từ 'board of education meetings' (tất cả các cuộc họp hội đồng giáo dục).",
+        st: "all + N số nhiều: tất cả; be streamed live: được phát trực tiếp", syn: "all = every, each; streamed live = broadcast live",
+        tr: "Bắt đầu từ ngày 8 tháng 10, tất cả các cuộc họp hội đồng giáo dục sẽ được phát trực tiếp trên trang web của học khu.", om: ["(hạn định) tất cả", "(liên từ) vì vậy", "(liên từ) rằng", "(giới từ) đến"]
+      },
+      {
+        n: 111, stem: "The hairstylists at Urbanite Salon have ------- experience working with a variety of hair products.", opts: ["considers", "considerable", "considerate", "considering"], ans: "B", type: "Từ loại",
+        ex: "Cần tính từ bổ nghĩa cho danh từ 'experience' → 'considerable' (đáng kể, nhiều).",
+        st: "considerable experience: kinh nghiệm đáng kể; a variety of: nhiều loại", syn: "considerable = substantial, significant; variety = range, assortment",
+        tr: "Các nhà tạo mẫu tóc tại Urbanite Salon có kinh nghiệm đáng kể khi làm việc với nhiều loại sản phẩm chăm sóc tóc.", om: ["(v – số ít) xem xét", "(adj) đáng kể", "(adj) chu đáo", "(V-ing) đang xem xét"]
+      },
+      {
+        n: 112, stem: "Both candidates are ------- suitable for the assistant manager position.", opts: ["permanently", "promptly", "equally", "gradually"], ans: "C", type: "Từ vựng",
+        ex: "Cần trạng từ mức độ: 'equally suitable' (phù hợp như nhau) cho CẢ HAI ứng viên.",
+        st: "be equally suitable: phù hợp như nhau; position: vị trí", syn: "equally = evenly, just as; suitable = appropriate, fit",
+        tr: "Cả hai ứng viên đều phù hợp như nhau cho vị trí trợ lý giám đốc.", om: ["(adv) vĩnh viễn", "(adv) nhanh chóng", "(adv) như nhau", "(adv) dần dần"]
+      },
+      {
+        n: 113, stem: "With the acquisition of Bloom Circuit, Wellstrom Hardware has ------- expanded its offerings and services.", opts: ["greater", "greatness", "great", "greatly"], ans: "D", type: "Từ loại",
+        ex: "Cần trạng từ bổ nghĩa cho động từ 'expanded' → 'greatly' (rất nhiều, to lớn).",
+        st: "greatly expand: mở rộng rất nhiều; acquisition: sự mua lại", syn: "greatly = significantly, substantially; expand = enlarge, broaden",
+        tr: "Với việc mua lại Bloom Circuit, Wellstrom Hardware đã mở rộng đáng kể các dịch vụ và mặt hàng của mình.", om: ["(adj – so sánh hơn) lớn hơn", "(n) sự vĩ đại", "(adj) tuyệt vời", "(adv) rất nhiều"]
+      },
+      {
+        n: 114, stem: "Please note that file names should not ------- capital letters or spaces.", opts: ["differ", "contain", "match", "pick"], ans: "B", type: "Từ vựng",
+        ex: "Tên tệp không nên CHỨA (contain) chữ in hoa hoặc dấu cách.",
+        st: "contain: chứa; capital letters: chữ in hoa", syn: "contain = include, hold; file names = document names",
+        tr: "Vui lòng lưu ý rằng tên tệp không được chứa chữ in hoa hoặc dấu cách.", om: ["(v) khác", "(v) chứa", "(v) phù hợp", "(v) chọn"]
+      },
+      {
+        n: 115, stem: "The Sun-Tech ceiling fan has received more than 15,000 five-star reviews from ------- customers.", opts: ["satisfied", "checked", "adjusted", "allowed"], ans: "A", type: "Từ vựng",
+        ex: "'satisfied customers' (khách hàng hài lòng) là collocation phổ biến, đặc biệt khi đi kèm đánh giá 5 sao.",
+        st: "satisfied customers: khách hàng hài lòng; five-star reviews: đánh giá 5 sao", syn: "satisfied = pleased, content; reviews = evaluations, ratings",
+        tr: "Quạt trần Sun-Tech đã nhận được hơn 15.000 đánh giá năm sao từ những khách hàng hài lòng.", om: ["(adj) hài lòng", "(adj) đã kiểm tra", "(adj) đã điều chỉnh", "(adj) được phép"]
+      },
+      {
+        n: 116, stem: "Please ------- the Returns section of our Web site if you are unhappy with any part of your order.", opts: ["visit", "visits", "visited", "visiting"], ans: "A", type: "Ngữ pháp",
+        ex: "Câu mệnh lệnh 'Please + V (nguyên mẫu)' → 'visit' (truy cập).",
+        st: "Please + V: vui lòng làm gì; be unhappy with: không hài lòng với", syn: "visit = access, go to; returns section = refund area",
+        tr: "Vui lòng truy cập phần Trả hàng trên trang web của chúng tôi nếu bạn không hài lòng với bất kỳ phần nào trong đơn hàng của mình.", om: ["(V nguyên mẫu) truy cập", "(v – số ít) truy cập", "(V3) đã truy cập", "(V-ing) đang truy cập"]
+      },
+      {
+        n: 117, stem: "Ito Auto Group is offering excellent ------- on pre-owned vehicles this month.", opts: ["trips", "reasons", "customs", "deals"], ans: "D", type: "Từ vựng",
+        ex: "'excellent deals on + N' (ưu đãi tuyệt vời cho…) là cụm từ phổ biến trong kinh doanh xe cộ.",
+        st: "offer excellent deals: cung cấp ưu đãi tuyệt vời; pre-owned vehicles: xe đã qua sử dụng", syn: "deals = offers, promotions; pre-owned = used, second-hand",
+        tr: "Tập đoàn Ô tô Ito đang cung cấp các ưu đãi tuyệt vời cho xe đã qua sử dụng trong tháng này.", om: ["(n) chuyến đi", "(n) lý do", "(n) phong tục, hải quan", "(n) ưu đãi, giao dịch"]
+      },
+      {
+        n: 118, stem: "Product prices are influenced ------- such factors as consumer demand and retail competition.", opts: ["by", "under", "those", "nearly"], ans: "A", type: "Giới từ",
+        ex: "Cấu trúc bị động 'be influenced by + N' (bị ảnh hưởng bởi).",
+        st: "be influenced by: bị ảnh hưởng bởi; consumer demand: nhu cầu tiêu dùng", syn: "influenced = affected, shaped; factors = elements, aspects",
+        tr: "Giá sản phẩm bị ảnh hưởng bởi các yếu tố như nhu cầu của người tiêu dùng và sự cạnh tranh bán lẻ.", om: ["(giới từ) bởi", "(giới từ) dưới", "(đại từ) những cái đó", "(adv) gần như"]
+      },
+      {
+        n: 119, stem: "Monmouth Enterprises will be ------- prefabricated houses online starting on April 1.", opts: ["predicting", "passing", "retaining", "marketing"], ans: "D", type: "Từ vựng",
+        ex: "Công ty sẽ TIẾP THỊ (market) nhà lắp ghép trực tuyến. 'marketing' phù hợp ngữ cảnh kinh doanh.",
+        st: "market a product: tiếp thị sản phẩm; prefabricated houses: nhà lắp ghép", syn: "marketing = promoting, selling; prefabricated = pre-built, modular",
+        tr: "Tập đoàn Monmouth sẽ tiếp thị nhà lắp ghép trực tuyến bắt đầu từ ngày 1 tháng 4.", om: ["(V-ing) đang dự đoán", "(V-ing) đang vượt qua", "(V-ing) đang giữ lại", "(V-ing) đang tiếp thị"]
+      },
+      {
+        n: 120, stem: "All employees should familiarize ------- with the company's policies and procedures.", opts: ["their", "them", "theirs", "themselves"], ans: "D", type: "Ngữ pháp",
+        ex: "Cụm 'familiarize oneself with' (làm quen với). Chủ ngữ 'All employees' số nhiều → đại từ phản thân 'themselves'.",
+        st: "familiarize oneself with: làm quen với; policies and procedures: các chính sách và quy trình", syn: "familiarize = acquaint; policies = rules, guidelines",
+        tr: "Tất cả nhân viên nên làm quen với các chính sách và quy trình của công ty.", om: ["(tính từ sở hữu) của họ", "(đại từ tân ngữ) họ", "(đại từ sở hữu) cái của họ", "(đại từ phản thân) chính họ"]
+      },
+      {
+        n: 121, stem: "Custom furniture orders require a 50 percent deposit ------- the time of the order.", opts: ["as", "off", "into", "at"], ans: "D", type: "Giới từ",
+        ex: "Cụm 'at the time of + N' (vào thời điểm…). Yêu cầu đặt cọc 50% vào thời điểm đặt hàng.",
+        st: "at the time of: vào thời điểm; deposit: tiền đặt cọc", syn: "deposit = down payment, advance; custom = tailor-made, bespoke",
+        tr: "Các đơn đặt hàng nội thất theo yêu cầu cần đặt cọc 50 phần trăm vào thời điểm đặt hàng.", om: ["(giới từ) như", "(giới từ) khỏi", "(giới từ) vào trong", "(giới từ) tại (thời điểm)"]
+      },
+      {
+        n: 122, stem: "We are planning a ------- for the Klemner Corporation's twentieth anniversary.", opts: ["celebration", "celebrated", "celebrity", "celebrate"], ans: "A", type: "Từ loại",
+        ex: "Sau mạo từ 'a' cần danh từ → 'celebration' (lễ kỷ niệm).",
+        st: "plan a celebration: lên kế hoạch tổ chức lễ kỷ niệm; anniversary: ngày kỷ niệm", syn: "celebration = festivity, party; anniversary = commemoration",
+        tr: "Chúng tôi đang lên kế hoạch tổ chức lễ kỷ niệm 20 năm thành lập Tập đoàn Klemner.", om: ["(n) lễ kỷ niệm", "(V3/adj) đã tổ chức", "(n) người nổi tiếng", "(v) tổ chức kỷ niệm"]
+      },
+      {
+        n: 123, stem: "Though she lacks political experience, Ms. Diaz has been ------- impressive in her first term as mayor.", opts: ["quite", "soon", "ever", "next"], ans: "A", type: "Từ vựng",
+        ex: "Cần trạng từ mức độ bổ nghĩa cho tính từ 'impressive' → 'quite' (khá, hoàn toàn).",
+        st: "quite impressive: khá ấn tượng; first term: nhiệm kỳ đầu tiên", syn: "quite = rather, very; impressive = remarkable, striking",
+        tr: "Mặc dù thiếu kinh nghiệm chính trị, cô Diaz đã tỏ ra khá ấn tượng trong nhiệm kỳ đầu tiên làm thị trưởng.", om: ["(adv) khá, hoàn toàn", "(adv) sớm", "(adv) từng", "(adj/adv) tiếp theo"]
+      },
+      {
+        n: 124, stem: "The university library usually acquires ------- copies of best-selling books to meet students' demand.", opts: ["multiply", "multiple", "multiples", "multiplicity"], ans: "B", type: "Từ loại",
+        ex: "Cần tính từ bổ nghĩa cho danh từ 'copies' → 'multiple' (nhiều).",
+        st: "multiple copies: nhiều bản sao; meet demand: đáp ứng nhu cầu", syn: "multiple = numerous, several; acquire = obtain, purchase",
+        tr: "Thư viện trường đại học thường mua nhiều bản sao của những cuốn sách bán chạy nhất để đáp ứng nhu cầu của sinh viên.", om: ["(v) nhân lên", "(adj) nhiều", "(n) bội số", "(n) tính đa dạng"]
+      },
+      {
+        n: 125, stem: "This year's conference tote bags were ------- donated by Etani Designs.", opts: ["generous", "generosity", "generously", "generosities"], ans: "C", type: "Từ loại",
+        ex: "Cần trạng từ bổ nghĩa cho động từ 'donated' → 'generously' (một cách hào phóng).",
+        st: "be generously donated: được quyên góp một cách hào phóng; tote bags: túi tote", syn: "generously = liberally, charitably; donate = contribute, give",
+        tr: "Những chiếc túi tote của hội nghị năm nay được Công ty Thiết kế Etani quyên góp một cách hào phóng.", om: ["(adj) hào phóng", "(n) sự hào phóng", "(adv) một cách hào phóng", "(n) những sự hào phóng"]
+      },
+      {
+        n: 126, stem: "We will be holding a ------- on Friday to honor the 30-year engineering career of Mr. Kuan.", opts: ["record", "share", "reception", "place"], ans: "C", type: "Từ vựng",
+        ex: "Cụm 'hold a reception' (tổ chức tiệc chiêu đãi) để tôn vinh sự nghiệp. 'reception' phù hợp ngữ cảnh.",
+        st: "hold a reception: tổ chức tiệc chiêu đãi; honor a career: tôn vinh sự nghiệp", syn: "reception = gathering, party; honor = celebrate, recognize",
+        tr: "Chúng tôi sẽ tổ chức một buổi tiệc chiêu đãi vào thứ Sáu để tôn vinh sự nghiệp kỹ sư 30 năm của ông Kuan.", om: ["(n) hồ sơ, kỷ lục", "(n) cổ phần", "(n) tiệc chiêu đãi", "(n) địa điểm"]
+      },
+      {
+        n: 127, stem: "Groove Background creates soothing playlists of instrumental music, ------- classical and jazz.", opts: ["instead", "including", "in addition", "indeed"], ans: "B", type: "Giới từ",
+        ex: "Cần giới từ liệt kê: 'including classical and jazz' (bao gồm nhạc cổ điển và jazz).",
+        st: "including + N: bao gồm; instrumental music: nhạc không lời", syn: "including = such as, comprising; soothing = calming, relaxing",
+        tr: "Groove Background tạo ra các danh sách phát nhạc không lời êm dịu, bao gồm nhạc cổ điển và nhạc jazz.", om: ["(adv) thay vì", "(giới từ) bao gồm", "(cụm) ngoài ra", "(adv) thực vậy"]
+      },
+      {
+        n: 128, stem: "Members of the finance department ------- to Mr. Chua's lecture on risk avoidance.", opts: ["to be invited", "inviting", "invite", "are invited"], ans: "D", type: "Ngữ pháp",
+        ex: "Cấu trúc bị động 'are invited to + N/V' (được mời đến). Mệnh đề cần động từ chính.",
+        st: "be invited to: được mời đến; risk avoidance: phòng tránh rủi ro", syn: "invited = asked, requested; lecture = talk, presentation",
+        tr: "Các thành viên của bộ phận tài chính được mời đến buổi thuyết trình của ông Chua về phòng tránh rủi ro.", om: ["(to be V3) để được mời", "(V-ing) đang mời", "(V nguyên mẫu) mời", "(bị động) được mời"]
+      },
+      {
+        n: 129, stem: "The board of trustees debated for hours ------- the revised hiring policies.", opts: ["during", "above", "over", "across"], ans: "C", type: "Giới từ",
+        ex: "Cấu trúc 'debate over + N' (tranh luận về vấn đề gì).",
+        st: "debate over: tranh luận về; hiring policies: chính sách tuyển dụng", syn: "debate = discuss, argue; revised = updated, amended",
+        tr: "Hội đồng quản trị đã tranh luận hàng giờ về các chính sách tuyển dụng đã được sửa đổi.", om: ["(giới từ) trong suốt", "(giới từ) phía trên", "(giới từ) về (vấn đề)", "(giới từ) xuyên qua"]
+      },
+      {
+        n: 130, stem: "The participants closely ------- the fitness instructor's movements tend to learn the proper technique more quickly.", opts: ["imitate", "imitations", "imitative", "imitating"], ans: "A", type: "Ngữ pháp",
+        ex: "Mệnh đề quan hệ rút gọn: 'participants [who closely imitate...] tend to learn' → dùng V nguyên mẫu (chủ động) hoặc V-ing. Ở đây dùng 'imitate' làm động từ chính cho mệnh đề quan hệ chưa rút gọn (participants who imitate...). Tuy nhiên, nếu xét ngữ pháp chặt chẽ: 'The participants closely imitating...' là rút gọn. Nhưng đáp án 'imitate' đóng vai trò động từ chính nếu hiểu là 'The participants [who] closely imitate...' (lược bỏ đại từ quan hệ). Cả A và D đều có thể chấp nhận tùy góc độ ngữ pháp, nhưng trong đề thi ETS, khi có động từ 'tend' phía sau, 'imitate' thường được chọn làm động từ chính của mệnh đề quan hệ lược bỏ đại từ (participants imitate...). Vậy đáp án là A.",
+        st: "N + (who) V + V(chính): mệnh đề quan hệ lược bỏ đại từ; imitate movements: bắt chước chuyển động", syn: "imitate = mimic, copy; proper technique = correct form",
+        tr: "Những người tham gia bắt chước chặt chẽ các chuyển động của huấn luyện viên thể hình có xu hướng học kỹ thuật đúng nhanh hơn.", om: ["(V nguyên mẫu) bắt chước", "(n) sự bắt chước", "(adj) hay bắt chước", "(V-ing) đang bắt chước"]
+      }
+    ];
+
+    /* ========== HELPERS ========== */
+    const L = "ABCD";
+    const $ = (s) => document.querySelector(s);
+    const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const typeCls = (t) => (t === "Từ loại" ? "t-tl" : t === "Ngữ pháp" ? "t-np" : "t-tv");
+
+    const store = {
+      get(k, d) {
+        try {
+          const v = localStorage.getItem("p5t5_2024:" + k);
+          return v === null ? d : JSON.parse(v);
+        } catch (e) {
+          return d;
+        }
+      },
+      set(k, v) {
+        try {
+          localStorage.setItem("p5t5_2024:" + k, JSON.stringify(v));
+        } catch (e) {}
+      }
+    };
+
+    let tnotes = store.get("tnotes", {});
+    let answers = store.get("answers", {});
+    let stars = store.get("stars", {});
+    let notes = store.get("notes", {});
+    let open = {};
+    let showKeys = false;
+    let filter = "all";
+    let fsize = store.get("fsize", 1.06);
+
+    document.documentElement.style.setProperty("--qsize", fsize + "rem");
+
+    function toast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.hidden = false;
+      clearTimeout(toast.t);
+      toast.t = setTimeout(() => (t.hidden = true), 1600);
+    }
+
+    /* ========== RENDER: QUESTION ========== */
+    function stemHTML(q) {
+      const a = answers[q.n];
+      const fill = a !== undefined || showKeys ? esc(q.opts[L.indexOf(q.ans)]) : "&nbsp;";
+      return esc(q.stem).replace("-------", `<span class="blank">${fill}</span>`);
+    }
+
+    function synHTML(s) {
+      return `<div class="syns">${s
+        .split(";")
+        .map((x) => x.trim())
+        .filter(Boolean)
+        .map((x) => {
+          const i = x.indexOf("=");
+          return i > 0
+            ? `<span class="syn"><strong>${esc(x.slice(0, i).trim())}</strong> = ${esc(x.slice(i + 1).trim())}</span>`
+            : `<span class="syn">${esc(x)}</span>`;
+        })
+        .join("")}</div>`;
+    }
+
+    function stHTML(s) {
+      const parts = s.split(";").map((x) => x.trim()).filter(Boolean);
+      return parts.length > 1
+        ? `<ul>${parts.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>`
+        : `<p>${esc(s)}</p>`;
+    }
+
+    function expHTML(q) {
+      return `<div class="exp">
+        <div class="row r0"><h4>Dịch câu</h4><p class="tr">${esc(q.tr)}</p></div>
+        <div class="row r4"><h4>Nghĩa các đáp án</h4><ul class="om">${q.opts
+          .map(
+            (o, i) =>
+              `<li class="${L[i] === q.ans ? "ok" : ""}"><b>${L[i]}</b><span><em>${esc(o)}</em> ${esc(
+                q.om[i]
+              )}</span>${L[i] === q.ans ? "<i>✓ đáp án</i>" : ""}</li>`
+          )
+          .join("")}</ul></div>
+        <div class="row r1"><h4>Giải thích</h4><p>${esc(q.ex)}</p></div>
+        <div class="row r2"><h4>Cấu trúc &amp; từ vựng</h4>${stHTML(q.st)}</div>
+        <div class="row r3"><h4>Đồng nghĩa</h4>${synHTML(q.syn)}</div>
+      </div>`;
+    }
+
+    function optsHTML(q) {
+      const a = answers[q.n];
+      return `<div class="opts">${q.opts
+        .map((o, i) => {
+          const l = L[i];
+          let cls = "opt";
+          if (a !== undefined) {
+            if (l === q.ans) cls += " right";
+            else if (l === a) cls += " wrong";
+          } else if (showKeys && l === q.ans) {
+            cls += " key";
+          }
+          return `<button class="${cls}" data-n="${q.n}" data-l="${l}" ${a !== undefined ? "disabled" : ""}><b>${l}</b><span>${esc(
+            o
+          )}</span></button>`;
+        })
+        .join("")}</div>`;
+    }
+
+    function cardHTML(q) {
+      const a = answers[q.n];
+      const fb =
+        a === undefined
+          ? ""
+          : a === q.ans
+          ? `<div class="feedback ok">✓ Chính xác! Đáp án ${q.ans}.</div>`
+          : `<div class="feedback no">✗ Chưa đúng. Bạn chọn ${a} — đáp án đúng là ${q.ans}.</div>`;
+
+      const showExp = open[q.n] !== undefined ? open[q.n] : a !== undefined;
+
+      return `<article class="q" id="q${q.n}">
+        <div class="qhead">
+          <span class="qnum">${q.n}</span>
+          <span class="tag ${typeCls(q.type)}">${q.type}</span>
+          <button class="star" data-star="${q.n}" aria-pressed="${!!stars[q.n]}" aria-label="Đánh dấu câu ${q.n}">★</button>
+        </div>
+        <p class="stem" data-hlkey="s${q.n}">${stemHTML(q)}</p>
+        ${optsHTML(q)}
+        ${fb}
+        <div class="actions">
+          <button class="link" data-toggle="${q.n}">${showExp ? "Ẩn giải thích ▲" : "Xem giải thích ▼"}</button>
+        </div>
+        ${showExp ? expHTML(q) : ""}
+        <div class="note">
+          <label for="note${q.n}">Ghi chú câu ${q.n}</label>
+          <textarea id="note${q.n}" data-note="${q.n}" placeholder="Ghi lại mẹo, từ mới, lỗi sai của bạn…">${esc(
+        notes[q.n] || ""
+      )}</textarea>
+        </div>
+        <div class="tnote">
+          <label for="tnote${q.n}">🎓 Ghi chú giáo viên · câu ${q.n} <span class="hint">– giải thích thêm, chỉ hiện ở chế độ Giáo viên &amp; khi trình chiếu</span></label>
+          <textarea id="tnote${q.n}" data-tnote="${q.n}" placeholder="VD: nhấn mạnh dấu hiệu nhận biết, ví dụ thêm, lỗi lớp hay mắc…">${esc(
+        tnotes[q.n] || ""
+      )}</textarea>
+        </div>
+      </article>`;
+    }
+
+    /* ========== FILTER / SCORE / LIST ========== */
+    function visible(q) {
+      if (filter === "all") return true;
+      if (filter === "star") return !!stars[q.n];
+      if (filter === "wrong") return answers[q.n] !== undefined && answers[q.n] !== q.ans;
+      if (filter === "todo") return answers[q.n] === undefined;
+      return q.type === filter;
+    }
+
+    function renderFilters() {
+      const defs = [
+        ["all", "Tất cả", Q.length],
+        ["Từ loại", "Từ loại"],
+        ["Ngữ pháp", "Ngữ pháp"],
+        ["Từ vựng", "Từ vựng"],
+        ["todo", "Chưa làm"],
+        ["wrong", "Câu sai"],
+        ["star", "★ Đánh dấu"]
+      ];
+
+      $("#filters").innerHTML = defs
+        .map(([k, lab]) => {
+          const c = Q.filter((q) => {
+            const f = filter;
+            filter = k;
+            const v = visible(q);
+            filter = f;
+            return v;
+          }).length;
+          return `<button class="chip" data-filter="${k}" aria-pressed="${filter === k}">${lab}<span class="c">${c}</span></button>`;
+        })
+        .join("");
+    }
+
+    function renderList() {
+      const qs = Q.filter(visible);
+      $("#list").innerHTML = qs.length
+        ? qs.map(cardHTML).join("")
+        : `<p class="empty">Không có câu nào trong mục này.</p>`;
+    }
+
+    function renderScore() {
+      const done = Object.keys(answers).length;
+      const ok = Q.filter((q) => answers[q.n] === q.ans).length;
+      $("#score").textContent = `${done}/30 · ${ok} đúng`;
+    }
+
+    function renderAll() {
+      renderFilters();
+      renderList();
+      renderScore();
+    }
+
+    function rerenderCard(n) {
+      const el = document.getElementById("q" + n);
+      if (!el) return;
+      const q = Q.find((x) => x.n == n);
+      el.outerHTML = cardHTML(q);
+      renderFilters();
+      renderScore();
+    }
+
+    /* ========== EVENTS: CLICK ========== */
+    document.addEventListener("click", (e) => {
+      /* Answer option */
+      const opt = e.target.closest(".opt");
+      if (opt && !opt.disabled) {
+        const n = +opt.dataset.n;
+        if (opt.closest("#spot")) {
+          sAns[n] = opt.dataset.l;
+          renderSpot();
+          return;
+        }
+        answers[n] = opt.dataset.l;
+        open[n] = true;
+        store.set("answers", answers);
+        rerenderCard(n);
+        return;
+      }
+
+      /* Toggle explanation */
+      const tg = e.target.closest("[data-toggle]");
+      if (tg) {
+        const n = +tg.dataset.toggle;
+        const cur = open[n] !== undefined ? open[n] : answers[n] !== undefined;
+        open[n] = !cur;
+        rerenderCard(n);
+        return;
+      }
+
+      /* Star */
+      const st = e.target.closest("[data-star]");
+      if (st) {
+        const n = +st.dataset.star;
+        stars[n] = !stars[n];
+        if (!stars[n]) delete stars[n];
+        store.set("stars", stars);
+        st.setAttribute("aria-pressed", !!stars[n]);
+        renderFilters();
+        return;
+      }
+
+      /* Filter */
+      const fl = e.target.closest("[data-filter]");
+      if (fl) {
+        filter = fl.dataset.filter;
+        renderAll();
+        return;
+      }
+
+      /* Tab */
+      const tab = e.target.closest("[data-tab]");
+      if (tab) {
+        document.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", b === tab));
+        ["practice", "vocab", "notes"].forEach((v) => ($("#view-" + v).hidden = v !== tab.dataset.tab));
+        if (tab.dataset.tab === "notes") renderNotes();
+        window.scrollTo(0, 0);
+      }
+    });
+
+    /* ========== EVENTS: INPUT ========== */
+    document.addEventListener("input", (e) => {
+      if (e.target.dataset.note) {
+        notes[e.target.dataset.note] = e.target.value;
+        if (!e.target.value) delete notes[e.target.dataset.note];
+        store.set("notes", notes);
+      }
+
+      if (e.target.dataset.tnote) {
+        const k = e.target.dataset.tnote;
+        tnotes[k] = e.target.value;
+        if (!e.target.value) delete tnotes[k];
+        store.set("tnotes", tnotes);
+      }
+
+      if (e.target.id === "tGeneral") store.set("tgeneral", e.target.value);
+      if (e.target.id === "generalNote") {
+        store.set("general", e.target.value);
+        $("#gSaved").textContent = "Đã lưu";
+      }
+      if (e.target.id === "search") renderVocab(e.target.value);
+    });
+
+    /* ========== TEACHER MODE ========== */
+    const tm = $("#teacherMode");
+    tm.checked = store.get("teacher", false);
+    $("#tbar").hidden = !tm.checked;
+    document.body.classList.toggle("teacher", tm.checked);
+
+    tm.addEventListener("change", () => {
+      $("#tbar").hidden = !tm.checked;
+      store.set("teacher", tm.checked);
+      document.body.classList.toggle("teacher", tm.checked);
+    });
+
+    $("#btnKeys").addEventListener("click", (e) => {
+      showKeys = !showKeys;
+      e.currentTarget.textContent = showKeys ? "Ẩn đáp án" : "Hiện đáp án";
+      renderList();
+    });
+
+    $("#btnExpAll").addEventListener("click", (e) => {
+      const all = Q.every((q) => open[q.n] === true);
+      Q.forEach((q) => (open[q.n] = !all));
+      e.currentTarget.textContent = all ? "Mở tất cả giải thích" : "Đóng tất cả giải thích";
+      renderList();
+    });
+
+    $("#fontUp").addEventListener("click", () => {
+      fsize = Math.min(1.6, +(fsize + 0.08).toFixed(2));
+      document.documentElement.style.setProperty("--qsize", fsize + "rem");
+      store.set("fsize", fsize);
+    });
+
+    $("#fontDown").addEventListener("click", () => {
+      fsize = Math.max(0.9, +(fsize - 0.08).toFixed(2));
+      document.documentElement.style.setProperty("--qsize", fsize + "rem");
+      store.set("fsize", fsize);
+    });
+
+    $("#btnReset").addEventListener("click", () => {
+      $("#confirmReset").hidden = false;
+      $("#confirmReset").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    $("#resetNo").addEventListener("click", () => ($("#confirmReset").hidden = true));
+
+    $("#resetYes").addEventListener("click", () => {
+      answers = {};
+      stars = {};
+      open = {};
+      store.set("answers", answers);
+      store.set("stars", stars);
+      $("#confirmReset").hidden = true;
+      renderAll();
+      window.scrollTo(0, 0);
+      toast("Đã xoá câu trả lời");
+    });
+
+    $("#btnRandom").addEventListener("click", () => {
+      document.querySelector('[data-tab="practice"]').click();
+      filter = "all";
+      renderAll();
+
+      const pool = Q.filter((q) => answers[q.n] === undefined);
+      const q = (pool.length ? pool : Q)[Math.floor(Math.random() * (pool.length || Q.length))];
+
+      document.querySelectorAll(".q.picked").forEach((x) => x.classList.remove("picked"));
+      const el = document.getElementById("q" + q.n);
+      el.classList.add("picked");
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      toast("Câu " + q.n);
+    });
+
+    /* ========== TIMER ========== */
+    let tLeft = 30;
+    let tRun = null;
+
+    const fmt = (s) => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+
+    function paintTimer() {
+      ["#timer", "#spotTime"].forEach((id) => {
+        const el = $(id);
+        el.textContent = fmt(tLeft);
+        el.classList.toggle("low", tLeft <= 5);
+      });
+
+      const lab = tRun ? "⏸ Dừng" : "⏱ Bắt đầu";
+      $("#btnTimer").textContent = lab;
+      $("#spotTimer").textContent = tRun ? "⏸" : "⏱";
+    }
+
+    function startStop() {
+      if (tRun) {
+        clearInterval(tRun);
+        tRun = null;
+      } else {
+        if (tLeft <= 0) tLeft = +$("#timerSel").value;
+        tRun = setInterval(() => {
+          tLeft--;
+          if (tLeft <= 0) {
+            tLeft = 0;
+            clearInterval(tRun);
+            tRun = null;
+            toast("Hết giờ!");
+          }
+          paintTimer();
+        }, 1000);
+      }
+      paintTimer();
+    }
+
+    $("#timerSel").addEventListener("change", () => {
+      clearInterval(tRun);
+      tRun = null;
+      tLeft = +$("#timerSel").value;
+      paintTimer();
+    });
+
+    $("#btnTimer").addEventListener("click", startStop);
+    $("#spotTimer").addEventListener("click", startStop);
+    paintTimer();
+
+    /* ========== SPOTLIGHT ========== */
+    let si = 0;
+    let sReveal = false;
+    let sExp = false;
+    let sAns = {};
+    let sNote = false;
+
+    function renderSpot() {
+      const q = Q[si];
+      const realAns = answers;
+      answers = sAns;
+
+      const a = answers[q.n];
+      const keyOn = sReveal || a !== undefined;
+
+      const saved = showKeys;
+      showKeys = sReveal;
+
+      $("#spotBody").innerHTML = `
+        <div class="qhead">
+          <span class="qnum">${q.n}</span>
+          <span class="tag ${typeCls(q.type)}">${q.type}</span>
+        </div>
+        <p class="stem" data-hlkey="s${q.n}">${stemHTML(q)}</p>
+        ${optsHTML(q)}
+        ${
+          keyOn
+            ? `<div class="feedback ok" style="font-size:1.2rem">Đáp án: ${q.ans}. ${esc(q.opts[L.indexOf(q.ans)])}</div>`
+            : ""
+        }
+        ${sExp ? expHTML(q) : ""}
+        ${
+          sNote
+            ? `<div class="tnote" style="display:block"><label for="spotT">🎓 Ghi chú giáo viên · câu ${
+                q.n
+              }</label><textarea id="spotT" data-tnote="${q.n}" placeholder="Gõ thêm giải thích cho lớp…">${esc(
+                tnotes[q.n] || ""
+              )}</textarea></div>`
+            : tnotes[q.n] && sExp
+            ? `<div class="tshow"><h4>🎓 Ghi chú giáo viên</h4>${esc(tnotes[q.n])}</div>`
+            : ""
+        }
+      `;
+
+      showKeys = saved;
+      answers = realAns;
+
+      $("#spotCount").textContent = `${si + 1} / ${Q.length}`;
+      $("#spotReveal").textContent = sReveal ? "Ẩn đáp án" : "Hiện đáp án";
+      $("#spotExp").textContent = sExp ? "Ẩn giải thích" : "Giải thích";
+      $("#spotNote").textContent = sNote ? "Ẩn ghi chú GV" : "🎓 Ghi chú GV";
+    }
+
+    function spotGo(d) {
+      si = Math.max(0, Math.min(Q.length - 1, si + d));
+      sReveal = false;
+      sExp = false;
+      clearInterval(tRun);
+      tRun = null;
+      tLeft = +$("#timerSel").value;
+      paintTimer();
+      renderSpot();
+    }
+
+    $("#btnSpot").addEventListener("click", () => {
+      const picked = document.querySelector(".q.picked");
+      si = picked ? Q.findIndex((q) => "q" + q.n === picked.id) : 0;
+      sAns = {};
+      sReveal = false;
+      sExp = false;
+      $("#spot").hidden = false;
+      renderSpot();
+    });
+
+    $("#spotClose").addEventListener("click", () => {
+      $("#spot").hidden = true;
+      renderAll();
+    });
+
+    $("#spotPrev").addEventListener("click", () => spotGo(-1));
+    $("#spotNext").addEventListener("click", () => spotGo(1));
+
+    $("#spotReveal").addEventListener("click", () => {
+      sReveal = !sReveal;
+      renderSpot();
+    });
+
+    $("#spotExp").addEventListener("click", () => {
+      sExp = !sExp;
+      renderSpot();
+    });
+
+    $("#spotNote").addEventListener("click", () => {
+      sNote = !sNote;
+      renderSpot();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if ($("#spot").hidden || e.target.matches("textarea,input")) return;
+
+      if (e.key === "ArrowRight") spotGo(1);
+      else if (e.key === "ArrowLeft") spotGo(-1);
+      else if (e.key === "Escape") {
+        $("#spot").hidden = true;
+        renderAll();
+      } else if (e.key === " ") {
+        e.preventDefault();
+        startStop();
+      } else if (e.key.toLowerCase() === "a") {
+        sReveal = !sReveal;
+        renderSpot();
+      } else if (e.key.toLowerCase() === "g") {
+        sExp = !sExp;
+        renderSpot();
+      } else if (e.key.toLowerCase() === "n") {
+        sNote = !sNote;
+        renderSpot();
+      }
+    });
+
+    /* ========== VOCAB ========== */
+    function hl(text, term) {
+      const t = esc(text);
+      if (!term) return t;
+      const re = new RegExp("(" + term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+      return t.replace(re, "<mark>$1</mark>");
+    }
+
+    function renderVocab(term = "") {
+      term = term.trim();
+      const rows = Q.filter(
+        (q) => !term || (q.st + " " + q.syn + " " + q.opts.join(" ")).toLowerCase().includes(term.toLowerCase())
+      );
+
+      $("#vbody").innerHTML = rows.length
+        ? rows
+            .map(
+              (q) =>
+                `<tr>
+                  <td>${q.n}</td>
+                  <td><span class="tag ${typeCls(q.type)}">${q.type}</span></td>
+                  <td><b>${q.ans}</b> ${esc(q.opts[L.indexOf(q.ans)])}</td>
+                  <td>${hl(q.st, term)}</td>
+                  <td>${hl(q.syn, term)}</td>
+                </tr>`
+            )
+            .join("")
+        : `<tr><td colspan="5" class="empty">Không tìm thấy “${esc(term)}”.</td></tr>`;
+    }
+
+    /* ========== NOTES ========== */
+    function renderNotes() {
+      $("#tGeneral").value = store.get("tgeneral", "");
+
+      const tk = Q.map((q) => String(q.n)).filter((k) => tnotes[k]);
+      const tl = (k) => "Câu " + k;
+
+      $("#tlist").innerHTML = tk.length
+        ? tk
+            .map(
+              (k) =>
+                `<div class="nitem" style="grid-template-columns:76px minmax(0,1fr)"><b>${tl(
+                  k
+                )}</b><div>${esc(tnotes[k]).replace(/\n/g, "<br>")}</div></div>`
+            )
+            .join("")
+        : `<p class="empty">Chưa có ghi chú giáo viên. Bật chế độ Giáo viên, ô ghi chú xanh sẽ xuất hiện dưới mỗi câu.</p>`;
+
+      const g = store.get("general", "");
+      $("#generalNote").value = g;
+
+      const items = Q.filter((q) => notes[q.n]);
+      $("#nlist").innerHTML = items.length
+        ? items
+            .map(
+              (q) =>
+                `<div class="nitem"><b>${q.n}</b><div>${esc(notes[q.n]).replace(/\n/g, "<br>")}</div></div>`
+            )
+            .join("")
+        : `<p class="empty">Chưa có ghi chú nào. Ghi chú ở dưới mỗi câu trong tab Luyện tập sẽ xuất hiện tại đây.</p>`;
+    }
+
+    $("#copyNotes").addEventListener("click", () => {
+      const txt = [
+        "GHI CHÚ – TOEIC Part 5 Test 5 (ETS 2024)",
+        "",
+        "Ghi chú chung:",
+        $("#generalNote").value || "(trống)",
+        "",
+        ...Q.filter((q) => notes[q.n]).map((q) => `Câu ${q.n}: ${notes[q.n]}`)
+      ].join("\n");
+
+      navigator.clipboard
+        .writeText(txt)
+        .then(() => toast("Đã sao chép ghi chú"))
+        .catch(() => {
+          const ta = $("#generalNote");
+          ta.focus();
+          ta.select();
+          toast("Không sao chép tự động được – hãy chọn và sao chép thủ công");
+        });
+    });
+
+    $("#copyT").addEventListener("click", () => {
+      const tl = (k) => "Câu " + k;
+      const txt = [
+        "GHI CHÚ GIÁO VIÊN – TOEIC Part 5 Test 5 (ETS 2024)",
+        "",
+        $("#tGeneral").value || "",
+        ""
+      ]
+        .concat(
+          Q.map((q) => String(q.n))
+            .filter((k) => tnotes[k])
+            .map((k) => tl(k) + ": " + tnotes[k])
+        )
+        .join("\n");
+
+      navigator.clipboard
+        .writeText(txt)
+        .then(() => toast("Đã sao chép ghi chú giáo viên"))
+        .catch(() => {
+          const ta = $("#tGeneral");
+          ta.focus();
+          ta.select();
+          toast("Hãy chọn và sao chép thủ công");
+        });
+    });
+
+    /* ========== HIGHLIGHTER ========== */
+    const HL = { pen: null, data: store.get("hl", {}) };
+    const HL_SKIP = ".gap,.blank,.hl-skip,button,textarea,input,select";
+
+    function hlNodes(root) {
+      const out = [];
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(n) {
+          return n.parentElement && n.parentElement.closest(HL_SKIP)
+            ? NodeFilter.FILTER_REJECT
+            : NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      let n;
+      while ((n = w.nextNode())) out.push(n);
+      return out;
+    }
+
+    function hlOffset(root, node, off) {
+      const r = document.createRange();
+      r.setStart(root, 0);
+      r.setEnd(node, off);
+
+      let total = 0;
+      for (const t of hlNodes(root)) {
+        if (t === node) {
+          total += off;
+          break;
+        }
+        if (r.intersectsNode(t)) total += t.length;
+        else break;
+      }
+      return total;
+    }
+
+    function hlUnwrap(root) {
+      root.querySelectorAll("mark.hl").forEach((m) => {
+        const p = m.parentNode;
+        while (m.firstChild) p.insertBefore(m.firstChild, m);
+        p.removeChild(m);
+      });
+      root.normalize();
+    }
+
+    function hlApply(root, s, e, c, i) {
+      let pos = 0;
+
+      for (const t of hlNodes(root)) {
+        const len = t.length;
+        const a = Math.max(s, pos) - pos;
+        const b = Math.min(e, pos + len) - pos;
+
+        if (a < b) {
+          let mid = t;
+          if (a > 0) mid = t.splitText(a);
+          if (b - a < mid.length) mid.splitText(b - a);
+
+          const m = document.createElement("mark");
+          m.className = "hl hl-" + c;
+          m.dataset.i = i;
+          mid.parentNode.insertBefore(m, mid);
+          m.appendChild(mid);
+        }
+
+        pos += len;
+        if (pos >= e) break;
+      }
+    }
+
+    function hlPaint(root) {
+      const key = root.dataset.hlkey;
+      hlUnwrap(root);
+      (HL.data[key] || []).forEach((h, i) => hlApply(root, h.s, h.e, h.c, i));
+    }
+
+    function hlPaintAll(scope) {
+      (scope || document).querySelectorAll("[data-hlkey]").forEach(hlPaint);
+    }
+
+    function hlSave() {
+      store.set("hl", HL.data);
+    }
+
+    function hlRepaintKey(key) {
+      document.querySelectorAll(`[data-hlkey="${key}"]`).forEach(hlPaint);
+    }
+
+    new MutationObserver((muts) => {
+      for (const m of muts)
+        for (const n of m.addedNodes) {
+          if (n.nodeType !== 1 || n.matches("mark.hl")) continue;
+          if (n.matches("[data-hlkey]")) hlPaint(n);
+          n.querySelectorAll && n.querySelectorAll("[data-hlkey]").forEach(hlPaint);
+        }
+    }).observe(document.body, { childList: true, subtree: true });
+
+    function hlCapture() {
+      if (!HL.pen || HL.pen === "erase") return;
+
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed || !sel.rangeCount) return;
+
+      const r = sel.getRangeAt(0);
+      const a = (r.startContainer.nodeType === 1 ? r.startContainer : r.startContainer.parentElement).closest(
+        "[data-hlkey]"
+      );
+      const b = (r.endContainer.nodeType === 1 ? r.endContainer : r.endContainer.parentElement).closest(
+        "[data-hlkey]"
+      );
+
+      if (!a || a !== b) {
+        toast("Hãy bôi chọn trong cùng một đoạn văn / câu");
+        return;
+      }
+
+      const s = hlOffset(a, r.startContainer, r.startOffset);
+      const e = hlOffset(a, r.endContainer, r.endOffset);
+
+      if (e > s) {
+        const k = a.dataset.hlkey;
+        (HL.data[k] = HL.data[k] || []).push({ s, e, c: HL.pen });
+        hlSave();
+        hlRepaintKey(k);
+      }
+
+      sel.removeAllRanges();
+    }
+
+    document.addEventListener("mouseup", () => setTimeout(hlCapture, 0));
+    document.addEventListener("touchend", () => setTimeout(hlCapture, 0));
+
+    document.addEventListener(
+      "click",
+      (e) => {
+        if (HL.pen !== "erase") return;
+
+        const m = e.target.closest("mark.hl");
+        if (!m) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const root = m.closest("[data-hlkey]");
+        const k = root.dataset.hlkey;
+
+        HL.data[k].splice(+m.dataset.i, 1);
+        if (!HL.data[k].length) delete HL.data[k];
+
+        hlSave();
+        hlRepaintKey(k);
+      },
+      true
+    );
+
+    function hlSetPen(p) {
+      HL.pen = HL.pen === p ? null : p;
+
+      document.querySelectorAll("[data-pen]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.pen === HL.pen));
+
+      document.body.classList.toggle("hl-on", !!HL.pen && HL.pen !== "erase");
+      document.body.classList.toggle("hl-erase", HL.pen === "erase");
+      $("#hlToggle").classList.toggle("on", !!HL.pen);
+
+      if (HL.pen && HL.pen !== "erase") toast("Bôi đen chữ trong đoạn văn / câu hỏi để highlight");
+      if (HL.pen === "erase") toast("Bấm vào phần đã highlight để xoá");
+    }
+
+    document.querySelectorAll("[data-pen]").forEach((b) => b.addEventListener("click", () => hlSetPen(b.dataset.pen)));
+
+    $("#hlToggle").addEventListener("click", () => {
+      const p = $("#hlPanel");
+      p.hidden = !p.hidden;
+      if (p.hidden && HL.pen) hlSetPen(HL.pen);
+    });
+
+    $("#hlClear").addEventListener("click", () => {
+      $("#hlConfirm").hidden = false;
+    });
+
+    $("#hlNo").addEventListener("click", () => {
+      $("#hlConfirm").hidden = true;
+    });
+
+    $("#hlYes").addEventListener("click", () => {
+      HL.data = {};
+      hlSave();
+      hlPaintAll();
+      $("#hlConfirm").hidden = true;
+      toast("Đã xoá tất cả highlight");
+    });
+
+    /* ========== INIT ========== */
+    renderAll();
+    renderVocab();
+    hlPaintAll();
+  </script>
+</body>
+</html>
